@@ -1,0 +1,12 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SV22T1020554.Models -> D:\SV22T1020554\SV22T1020554.Model\bin\Debug\net8.0\SV22T1020554.Models.dll
+  SV22T1020554.DataLayer -> D:\SV22T1020554\SV22T1020554.DataLayer\bin\Debug\net8.0\SV22T1020554.DataLayer.dll
+  SV22T1020554.BusinessLayer -> D:\SV22T1020554\SV22T1020554.BusinessLayer\bin\Debug\net8.0\SV22T1020554.BusinessLayer.dll
+  SV22T1020554.Shop -> D:\SV22T1020554\SV22T1020554.Shop\bin\Debug\net8.0\SV22T1020554.Shop.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.73

@@ -1,0 +1,306 @@
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal totalAmount = Model.Sum(c => c.TotalPrice);
+}
+
+<div class="container py-4">
+    <h2 class="section-title">
+        <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng
+    </h2>
+
+    @if (Model.Count > 0)
+    {
+        <form asp-controller="Order" asp-action="UpdateCart" method="post" id="cartForm">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="cart-table">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" class="form-check-input" id="selectAll"
+                                               checked title="Chọn tất cả"
+                                               style="cursor: pointer; width: 18px; height: 18px;" />
+                                    </th>
+                                    <th style="width: 50px;"></th>
+                                    <th>Sản phẩm</th>
+                                    <th style="width: 120px;">Đơn giá</th>
+                                    <th style="width: 120px;">Số lượng</th>
+                                    <th style="width: 130px;">Thành tiền</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    var item = Model[i];
+                                    <tr data-product-id="@item.ProductID" data-price="@item.Price" data-quantity="@item.Quantity">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input item-checkbox"
+                                                   value="@item.ProductID" checked
+                                                   style="cursor: pointer; width: 18px; height: 18px;" />
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Photo))
+                                            {
+                                                <img src="@item.Photo" alt="@item.ProductName" class="cart-product-image" />
+                                            }
+                                            else
+                                            {
+                                                <div class="cart-product-image d-flex align-items-center justify-content-center" style="background: #f8fafc;">
+                                                    <i class="fas fa-image" style="color: #cbd5e1;"></i>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductID" class="fw-semibold" style="color: var(--dark);">
+                                                @item.ProductName
+                                            </a>
+                                            <div style="font-size: 0.8rem; color: var(--gray);">@item.Unit</div>
+                                            @if (!string.IsNullOrEmpty(item.Color))
+                                            {
+                                                <div style="font-size: 0.78rem; color: var(--gray);">
+                                                    <i class="fas fa-palette me-1"></i>Màu: <strong>@item.Color</strong>
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.Size))
+                                            {
+                                                <div style="font-size: 0.78rem; color: var(--gray);">
+                                                    <i class="fas fa-ruler me-1"></i>Size: <strong>@item.Size</strong>
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.CategoryName))
+                                            {
+                                                <span class="badge bg-light text-dark mt-1" style="font-size: 0.72rem;">@item.CategoryName</span>
+                                            }
+                                        </td>
+                                        <td class="fw-semibold">@item.Price.ToString("N0") ₫</td>
+                                        <td>
+                                            <input type="hidden" name="productIDs" value="@item.ProductID" />
+                                            <input type="number" name="quantities" value="@item.Quantity" min="1"
+                                                   class="quantity-input" data-product-id="@item.ProductID" />
+                                        </td>
+                                        <td class="fw-bold item-total" style="color: var(--primary);">@item.TotalPrice.ToString("N0") ₫</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm text-danger btn-remove-item"
+                                                    data-product-id="@item.ProductID"
+                                                    data-product-name="@item.ProductName"
+                                                    title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-outline-custom">
+                            <i class="fas fa-sync-alt me-1"></i>Cập nhật giỏ hàng
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" id="btnClearCart" style="border-radius: 8px;">
+                            <i class="fas fa-trash me-1"></i>Xóa tất cả
+                        </button>
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary ms-auto" style="border-radius: 8px;">
+                            <i class="fas fa-arrow-left me-1"></i>Tiếp tục mua sắm
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="cart-summary">
+                        <h5 class="fw-bold mb-3">Tóm tắt đơn hàng</h5>
+                        <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
+                            <span class="text-muted">Sản phẩm đã chọn:</span>
+                            <span class="fw-semibold" id="selectedCount">@Model.Sum(c => c.Quantity)</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fw-semibold">Tổng cộng:</span>
+                            <span class="total-price" id="selectedTotal">@totalAmount.ToString("N0") ₫</span>
+                        </div>
+                        <button type="button" id="btnCheckoutSelected" class="btn btn-primary-custom w-100" style="padding: 0.75rem;">
+                            <i class="fas fa-credit-card me-2"></i>Tiến hành đặt hàng
+                        </button>
+                        <div id="noSelectionWarning" class="text-danger text-center mt-2" style="font-size: 0.85rem; display: none;">
+                            <i class="fas fa-exclamation-circle me-1"></i>Vui lòng chọn ít nhất một sản phẩm
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Hidden form for checkout selected items -->
+        <form id="checkoutForm" asp-controller="Order" asp-action="CheckoutSelected" method="post" style="display: none;">
+            <div id="checkoutProductIDs"></div>
+        </form>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <h5>Giỏ hàng trống</h5>
+            <p>Hãy thêm sản phẩm vào giỏ hàng để bắt đầu mua sắm</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary-custom">
+                <i class="fas fa-shopping-bag me-1"></i>Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Modal xác nhận xóa sản phẩm -->
+<div class="modal fade" id="removeItemModal" tabindex="-1" aria-labelledby="removeItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #fee2e2, #fecaca); padding: 1.5rem;">
+                <h5 class="modal-title fw-bold" id="removeItemModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Xác nhận xóa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4 px-4">
+                <p style="font-size: 1rem; margin-bottom: 0;">
+                    Bạn có muốn xóa mặt hàng <strong id="removeItemName" class="text-danger"></strong> khỏi giỏ hàng không?
+                </p>
+            </div>
+            <div class="modal-footer border-0" style="padding: 1rem 1.5rem 1.5rem;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <a id="confirmRemoveBtn" href="#" class="btn btn-danger" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-trash me-1"></i>Xóa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa tất cả -->
+<div class="modal fade" id="clearCartModal" tabindex="-1" aria-labelledby="clearCartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #fee2e2, #fecaca); padding: 1.5rem;">
+                <h5 class="modal-title fw-bold" id="clearCartModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Xóa toàn bộ giỏ hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4 px-4">
+                <p style="font-size: 1rem; margin-bottom: 0;">
+                    Bạn có chắc chắn muốn xóa <strong class="text-danger">toàn bộ sản phẩm</strong> trong giỏ hàng không?
+                </p>
+            </div>
+            <div class="modal-footer border-0" style="padding: 1rem 1.5rem 1.5rem;">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <a asp-controller="Order" asp-action="ClearCart" class="btn btn-danger" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-trash me-1"></i>Xóa tất cả
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+$(document).ready(function () {
+    // ========== Xóa sản phẩm (modal) ==========
+    $('.btn-remove-item').on('click', function () {
+        var productId = $(this).data('product-id');
+        var productName = $(this).data('product-name');
+        $('#removeItemName').text(productName);
+        $('#confirmRemoveBtn').attr('href', '/Order/RemoveFromCart?productID=' + productId);
+        var modal = new bootstrap.Modal(document.getElementById('removeItemModal'));
+        modal.show();
+    });
+
+    // ========== Xóa tất cả (modal) ==========
+    $('#btnClearCart').on('click', function () {
+        var modal = new bootstrap.Modal(document.getElementById('clearCartModal'));
+        modal.show();
+    });
+
+    // ========== Checkbox logic ==========
+    function updateSummary() {
+        var totalQty = 0;
+        var totalPrice = 0;
+
+        $('.item-checkbox:checked').each(function () {
+            var row = $(this).closest('tr');
+            var price = parseFloat(row.data('price'));
+            var qtyInput = row.find('.quantity-input');
+            var qty = parseInt(qtyInput.val()) || 0;
+            totalQty += qty;
+            totalPrice += price * qty;
+        });
+
+        $('#selectedCount').text(totalQty);
+        $('#selectedTotal').text(totalPrice.toLocaleString('vi-VN') + ' ₫');
+
+        // Show/hide warning
+        if ($('.item-checkbox:checked').length === 0) {
+            $('#noSelectionWarning').show();
+            $('#btnCheckoutSelected').addClass('disabled').css('opacity', '0.6');
+        } else {
+            $('#noSelectionWarning').hide();
+            $('#btnCheckoutSelected').removeClass('disabled').css('opacity', '1');
+        }
+
+        // Update selectAll state
+        var allChecked = $('.item-checkbox').length === $('.item-checkbox:checked').length;
+        $('#selectAll').prop('checked', allChecked);
+    }
+
+    // Select All
+    $('#selectAll').on('change', function () {
+        var isChecked = $(this).is(':checked');
+        $('.item-checkbox').prop('checked', isChecked);
+        updateSummary();
+    });
+
+    // Individual checkbox
+    $('.item-checkbox').on('change', function () {
+        updateSummary();
+    });
+
+    // Quantity change -> update row total and summary
+    $('.quantity-input').on('input change', function () {
+        var row = $(this).closest('tr');
+        var price = parseFloat(row.data('price'));
+        var qty = parseInt($(this).val()) || 0;
+        var rowTotal = price * qty;
+        row.find('.item-total').text(rowTotal.toLocaleString('vi-VN') + ' ₫');
+        // Update data attribute for summary calc
+        row.data('quantity', qty);
+        updateSummary();
+    });
+
+    // ========== Checkout selected ==========
+    $('#btnCheckoutSelected').on('click', function () {
+        var selectedIds = [];
+        $('.item-checkbox:checked').each(function () {
+            selectedIds.push($(this).val());
+        });
+
+        if (selectedIds.length === 0) {
+            $('#noSelectionWarning').show();
+            return;
+        }
+
+        // Build hidden inputs
+        var container = $('#checkoutProductIDs');
+        container.empty();
+        selectedIds.forEach(function (id) {
+            container.append('<input type="hidden" name="selectedProductIDs" value="' + id + '" />');
+        });
+
+        $('#checkoutForm').submit();
+    });
+
+    // Init
+    updateSummary();
+});
+</script>
+}

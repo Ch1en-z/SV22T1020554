@@ -1,0 +1,71 @@
+@model Employee
+@{
+    ViewBag.Title = "Thêm nhân viên mới";
+}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Employee" asp-action="Create" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="form-group mb-3">
+                        <label class="form-label" style="font-weight:bold">Họ và tên nhân viên:</label>
+                        <input type="text" class="form-control" name="FullName" required autofocus>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="form-label" style="font-weight:bold">Email (Tài khoản):</label>
+                            <input type="email" class="form-control" name="Email" required>
+                        </div>
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="form-label" style="font-weight:bold">Mật khẩu:</label>
+                            <input type="password" class="form-control" name="Password" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="form-label" style="font-weight:bold">Điện thoại:</label>
+                            <input type="tel" class="form-control" name="Phone">
+                        </div>
+                        <div class="col-md-6 form-group mb-3">
+                            <label class="form-label" style="font-weight:bold">Ngày sinh:</label>
+                            <input type="date" class="form-control" name="BirthDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label" style="font-weight:bold">Địa chỉ:</label>
+                        <input type="text" class="form-control" name="Address">
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <div class="form-group mb-3 text-start">
+                        <label class="form-label" style="font-weight:bold">Ảnh đại diện:</label>
+                    </div>
+                    <div class="mb-3">
+                        <img id="PhotoPreview" src="~/images/employees/no-photo.png"
+                             class="img-thumbnail rounded-circle" style="width: 180px; height: 180px; object-fit: cover;">
+                    </div>
+                    <input type="file" class="form-control form-control-sm" name="uploadPhoto"
+                           onchange="document.getElementById('PhotoPreview').src = window.URL.createObjectURL(this.files[0])">
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Employee" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+<form action="~/Order/Shipping/@ViewBag.OrderID" method="post" id="formShipping">
+    <div class="modal-header bg-gradient-navy text-white py-3">
+        <h5 class="modal-title d-flex align-items-center">
+            <i class="bi bi-truck-flatbed me-2 fs-4"></i>
+            <span>Xác nhận chuyển giao hàng</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body p-4">
+        <div class="mb-4">
+            <p class="text-muted mb-3">Vui lòng chọn đơn vị hoặc người giao hàng để thực hiện chuyển đơn hàng.</p>
+            <div class="form-group">
+                <label class="form-label fw-bold text-dark mb-2">
+                    <i class="bi bi-person-check me-1 text-primary"></i> Đơn vị giao hàng:
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <select class="form-select border-start-0 ps-0" name="shipperID" required>
+                        <option value="0">-- Chọn người giao hàng ---</option>
+                        @foreach (var s in (await PartnerDataService.ListShippersAsync(new SV22T1020554.Models.Common.PaginationSearchInput { Page = 1, PageSize = 9999, SearchValue = "" })).DataItems)
+                        {
+                            <option value="@s.ShipperID">@s.ShipperName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-text text-danger mt-2" id="shipperError" style="display:none;">
+                    Vui lòng chọn đơn vị giao hàng
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+            <div>
+                Trạng thái đơn hàng sẽ được chuyển sang <strong>Đang giao hàng</strong> sau khi xác nhận.
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer bg-light px-4 py-3">
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+            <i class="bi bi-check2-circle me-1"></i> Xác nhận và Gửi đi
+        </button>
+        <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal">
+            Hủy bỏ
+        </button>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#formShipping').on('submit', function (e) {
+            var shipperID = $('select[name="shipperID"]').val();
+            if (shipperID == "0") {
+                e.preventDefault();
+                $('#shipperError').fadeIn();
+                $('select[name="shipperID"]').addClass('is-invalid');
+                return false;
+            }
+            return true;
+        });
+
+        $('select[name="shipperID"]').on('change', function() {
+            if ($(this).val() != "0") {
+                $('#shipperError').fadeOut();
+                $(this).removeClass('is-invalid');
+            }
+        });
+    });
+</script>

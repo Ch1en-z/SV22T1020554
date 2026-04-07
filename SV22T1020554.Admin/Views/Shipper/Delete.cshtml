@@ -1,0 +1,46 @@
+@model Shipper
+@{
+    ViewBag.Title = "Xóa người giao hàng";
+}
+
+<div class="card card-danger card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Xóa người giao hàng</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Shipper" asp-action="Delete" method="post">
+            <input type="hidden" asp-for="ShipperID" />
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Tên người giao hàng:</label>
+                <p class="form-control-static">@Model.ShipperName</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Điện thoại:</label>
+                <p class="form-control-static">@Model.Phone</p>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-danger text-start mb-3">
+                        @TempData["Message"]
+                    </div>
+                }
+                
+                <p class="text-warning text-start mb-3"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa người giao hàng này không?</p>
+                
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                </button>
+                <a href="~/Shipper" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

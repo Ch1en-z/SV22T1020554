@@ -1,0 +1,64 @@
+@model Supplier
+@{
+    ViewBag.Title = "Thông tin nhà cung cấp";
+}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Supplier" asp-action="Save" method="post">
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Tên nhà cung cấp:</label>
+                    <input type="text" class="form-control" name="SupplierName" placeholder="Nhập tên nhà cung cấp..." required autofocus>
+                </div>
+
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Tên giao dịch:</label>
+                    <input type="text" class="form-control" name="ContactName" placeholder="Tên giao dịch hoặc người đại diện">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Điện thoại:</label>
+                    <input type="tel" class="form-control" name="Phone" placeholder="Số điện thoại...">
+                </div>
+
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Email:</label>
+                    <input type="email" class="form-control" name="Email" placeholder="Địa chỉ email...">
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Địa chỉ:</label>
+                <input type="text" class="form-control" name="Address" placeholder="Số nhà, tên đường...">
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Tỉnh/Thành:</label>
+                <select class="form-select" name="Province">
+                    <option value="">-- Chọn Tỉnh/Thành --</option>
+                    <option value="Hà Nội">Hà Nội</option>
+                    <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                    <option value="Đà Nẵng">Đà Nẵng</option>
+                    <option value="Hải Phòng">Hải Phòng</option>
+                    <option value="Cần Thơ">Cần Thơ</option>
+                </select>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Supplier" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

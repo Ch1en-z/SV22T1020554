@@ -1,0 +1,128 @@
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Đặt hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var customer = ViewBag.Customer as Customer;
+    var provinces = ViewBag.Provinces as List<Province> ?? new List<Province>();
+    decimal totalAmount = Model.Sum(c => c.TotalPrice);
+}
+
+<div class="container py-4">
+    <h2 class="section-title">
+        <i class="fas fa-credit-card me-2"></i>Đặt hàng
+    </h2>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-custom">
+            <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.ErrorMessage
+        </div>
+    }
+
+    <form method="post" asp-controller="Order" asp-action="Checkout">
+        <!-- Hidden inputs for selected product IDs -->
+        @foreach (var item in Model)
+        {
+            <input type="hidden" name="selectedProductIDs" value="@item.ProductID" />
+        }
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <!-- Shipping Info -->
+                <div class="card-glass p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-truck me-2 text-primary"></i>Thông tin giao hàng</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Khách hàng</label>
+                            <input type="text" class="form-control" value="@customer?.CustomerName"
+                                   disabled style="border-radius: 8px; background: #f8fafc;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Điện thoại</label>
+                            <input type="text" class="form-control" value="@customer?.Phone"
+                                   disabled style="border-radius: 8px; background: #f8fafc;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Tỉnh/Thành giao hàng *</label>
+                            <select class="form-select" name="deliveryProvince" required style="border-radius: 8px;">
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                                @foreach (var p in provinces)
+                                {
+                                    if (customer?.Province == p.ProvinceName)
+                                    {
+                                        <option value="@p.ProvinceName" selected>@p.ProvinceName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@p.ProvinceName">@p.ProvinceName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Địa chỉ giao hàng *</label>
+                            <input type="text" class="form-control" name="deliveryAddress"
+                                   value="@customer?.Address" required style="border-radius: 8px;"
+                                   placeholder="Nhập địa chỉ giao hàng" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="card-glass p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-box me-2 text-primary"></i>Sản phẩm đặt mua (@Model.Count sản phẩm)</h5>
+                    @foreach (var item in Model)
+                    {
+                        <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+                            @if (!string.IsNullOrEmpty(item.Photo))
+                            {
+                                <img src="@item.Photo" alt="@item.ProductName" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" />
+                            }
+                            else
+                            {
+                                <div style="width: 50px; height: 50px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image" style="color: #cbd5e1;"></i>
+                                </div>
+                            }
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold" style="font-size: 0.9rem;">@item.ProductName</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">@item.Quantity x @item.Price.ToString("N0") ₫</div>
+                            </div>
+                            <div class="fw-bold" style="color: var(--primary);">@item.TotalPrice.ToString("N0") ₫</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-5">
+                <div class="cart-summary" style="position: sticky; top: 80px;">
+                    <h5 class="fw-bold mb-3">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
+                        <span class="text-muted">Số sản phẩm:</span>
+                        <span>@Model.Sum(c => c.Quantity)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span>@totalAmount.ToString("N0") ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="text-success">Miễn phí</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold" style="font-size: 1.1rem;">Tổng cộng:</span>
+                        <span class="total-price">@totalAmount.ToString("N0") ₫</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100" style="padding: 0.85rem; font-size: 1.05rem;">
+                        <i class="fas fa-check-circle me-2"></i>Xác nhận đặt hàng
+                    </button>
+                    <a asp-controller="Order" asp-action="Cart" class="btn btn-outline-custom w-100 mt-2">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

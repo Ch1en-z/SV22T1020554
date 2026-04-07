@@ -1,0 +1,67 @@
+@model Product
+@{
+    ViewBag.Title = "Xóa mặt hàng";
+}
+
+<div class="card card-danger card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Xóa mặt hàng</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Product" asp-action="Delete" asp-route-id="@Model.ProductID" method="post">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Tên mặt hàng:</label>
+                        <p class="form-control-static">@Model.ProductName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Đơn vị tính:</label>
+                        <p class="form-control-static">@Model.Unit</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Giá bán:</label>
+                        <p class="form-control-static text-danger fw-bold">@Model.Price.ToString("N0") VNĐ</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Mô tả chi tiết:</label>
+                        <p class="form-control-static">@Model.ProductDescription</p>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <label class="form-label text-primary" style="font-weight:bold">Ảnh minh họa:</label>
+                    <div class="p-1 border rounded bg-light">
+                        <img src="~/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "noproduct.png" : Model.Photo)"
+                             class="img-fluid rounded"
+                             style="max-height: 250px" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-danger text-start mb-3">
+                        @TempData["Message"]
+                    </div>
+                }
+                
+                <p class="text-warning text-start mb-3"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa mặt hàng này không?</p>
+                
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                </button>
+                <a href="~/Product" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

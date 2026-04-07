@@ -1,0 +1,202 @@
+<!-- Modal Thêm vào giỏ hàng -->
+<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content add-cart-modal-content">
+            <div class="modal-header add-cart-modal-header">
+                <h5 class="modal-title fw-bold" id="addToCartModalLabel">
+                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body add-cart-modal-body">
+                <!-- Loading spinner -->
+                <div id="modalLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Đang tải thông tin sản phẩm...</p>
+                </div>
+
+                <!-- Product Info -->
+                <div id="modalProductInfo" style="display: none;">
+                    <div class="d-flex gap-3 mb-3 p-3 rounded" style="background: #f8fafc;">
+                        <div class="modal-product-image">
+                            <img id="modalProductImage" src="" alt="" />
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1" id="modalProductName" style="font-size: 1rem; line-height: 1.3;"></h6>
+                            <div class="text-primary fw-bold" id="modalProductPrice" style="font-size: 1.15rem;"></div>
+                            <span class="badge bg-light text-dark mt-1" id="modalCategoryName" style="font-size: 0.8rem;">
+                            </span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="modalProductID" value="" />
+
+                    <!-- Số lượng -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-sort-numeric-up me-1 text-primary"></i>Số lượng
+                        </label>
+                        <div class="input-group modal-qty-group">
+                            <button type="button" class="btn btn-outline-secondary" onclick="modalDecreaseQty()">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="modalQuantity" value="1" min="1" class="form-control text-center" />
+                            <button type="button" class="btn btn-outline-secondary" onclick="modalIncreaseQty()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Màu sắc -->
+                    <div class="mb-3" id="modalColorGroup" style="display: none;">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-palette me-1 text-primary"></i>Màu sắc
+                        </label>
+                        <div class="modal-color-options" id="modalColorOptions">
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Đen" />
+                                <span class="color-swatch" style="background: #1a1a2e;" title="Đen"></span>
+                                <span class="color-label">Đen</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Trắng" />
+                                <span class="color-swatch" style="background: #f8f9fa; border: 1px solid #dee2e6;" title="Trắng"></span>
+                                <span class="color-label">Trắng</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Đỏ" />
+                                <span class="color-swatch" style="background: #ef4444;" title="Đỏ"></span>
+                                <span class="color-label">Đỏ</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Xanh dương" />
+                                <span class="color-swatch" style="background: #3b82f6;" title="Xanh dương"></span>
+                                <span class="color-label">Xanh dương</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Xanh lá" />
+                                <span class="color-swatch" style="background: #22c55e;" title="Xanh lá"></span>
+                                <span class="color-label">Xanh lá</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Vàng" />
+                                <span class="color-swatch" style="background: #eab308;" title="Vàng"></span>
+                                <span class="color-label">Vàng</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Hồng" />
+                                <span class="color-swatch" style="background: #ec4899;" title="Hồng"></span>
+                                <span class="color-label">Hồng</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Xám" />
+                                <span class="color-swatch" style="background: #6b7280;" title="Xám"></span>
+                                <span class="color-label">Xám</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Nâu" />
+                                <span class="color-swatch" style="background: #92400e;" title="Nâu"></span>
+                                <span class="color-label">Nâu</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="radio" name="modalColor" value="Bạc" />
+                                <span class="color-swatch" style="background: linear-gradient(135deg, #e2e8f0, #94a3b8);" title="Bạc"></span>
+                                <span class="color-label">Bạc</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Size -->
+                    <div class="mb-3" id="modalSizeGroup" style="display: none;">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-ruler me-1 text-primary"></i>Kích cỡ (Size)
+                        </label>
+                        <div class="modal-size-options" id="modalSizeOptions">
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="XS" />
+                                <span class="size-badge">XS</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="S" />
+                                <span class="size-badge">S</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="M" />
+                                <span class="size-badge">M</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="L" />
+                                <span class="size-badge">L</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="XL" />
+                                <span class="size-badge">XL</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="XXL" />
+                                <span class="size-badge">XXL</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="36" />
+                                <span class="size-badge">36</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="37" />
+                                <span class="size-badge">37</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="38" />
+                                <span class="size-badge">38</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="39" />
+                                <span class="size-badge">39</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="40" />
+                                <span class="size-badge">40</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="41" />
+                                <span class="size-badge">41</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="42" />
+                                <span class="size-badge">42</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="radio" name="modalSize" value="43" />
+                                <span class="size-badge">43</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer add-cart-modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="btnConfirmAddToCart" style="padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-cart-plus me-1"></i>Thêm vào giỏ
+                </button>
+                <button type="button" class="btn btn-primary-custom" id="btnBuyNow" style="padding: 0.5rem 1.5rem;">
+                    <i class="fas fa-bolt me-1"></i>Mua ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast thông báo cho tất cả trang -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+    <div id="cartToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i><span id="cartToastMsg">Đã thêm vào giỏ hàng!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>

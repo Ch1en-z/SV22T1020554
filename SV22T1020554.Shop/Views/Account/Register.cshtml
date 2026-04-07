@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var provinces = ViewBag.Provinces as List<Province> ?? new List<Province>();
+}
+
+<div class="auth-container" style="padding: 2rem 1rem;">
+    <div class="auth-card" style="max-width: 560px;">
+        <div class="auth-header">
+            <i class="fas fa-user-plus" style="font-size: 3rem; margin-bottom: 0.8rem; opacity: 0.9;"></i>
+            <h3>Tạo tài khoản mới</h3>
+            <p>Đăng ký để bắt đầu mua sắm</p>
+        </div>
+        <div class="auth-body">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-custom">
+                    <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.ErrorMessage
+                </div>
+            }
+
+            <form method="post" asp-controller="Account" asp-action="Register">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="customerName" name="customerName"
+                                   placeholder="Tên" value="@ViewBag.CustomerName" required />
+                            <label for="customerName"><i class="fas fa-user me-1"></i>Tên khách hàng *</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="contactName" name="contactName"
+                                   placeholder="Tên giao dịch" value="@ViewBag.ContactName" />
+                            <label for="contactName"><i class="fas fa-address-card me-1"></i>Tên giao dịch</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="Email" value="@ViewBag.Email" required />
+                            <label for="email"><i class="fas fa-envelope me-1"></i>Email *</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   placeholder="Điện thoại" value="@ViewBag.Phone" />
+                            <label for="phone"><i class="fas fa-phone me-1"></i>Điện thoại</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="province" name="province">
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                                @foreach (var p in provinces)
+                                {
+                                    if (ViewBag.Province != null && ViewBag.Province.ToString() == p.ProvinceName)
+                                    {
+                                        <option value="@p.ProvinceName" selected>@p.ProvinceName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@p.ProvinceName">@p.ProvinceName</option>
+                                    }
+                                }
+                            </select>
+                            <label for="province"><i class="fas fa-map-marker-alt me-1"></i>Tỉnh/Thành</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="address" name="address"
+                                   placeholder="Địa chỉ" value="@ViewBag.Address" />
+                            <label for="address"><i class="fas fa-home me-1"></i>Địa chỉ</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Mật khẩu" required />
+                            <label for="password"><i class="fas fa-lock me-1"></i>Mật khẩu *</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                   placeholder="Xác nhận mật khẩu" required />
+                            <label for="confirmPassword"><i class="fas fa-lock me-1"></i>Xác nhận mật khẩu *</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-auth mt-4 mb-3">
+                    <i class="fas fa-user-plus me-2"></i>Đăng ký
+                </button>
+                <p class="text-center mb-0" style="font-size: 0.9rem;">
+                    Đã có tài khoản?
+                    <a asp-controller="Account" asp-action="Login" class="fw-semibold">Đăng nhập</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+@model ProductAttribute
+@{
+}
+
+<div class="card card-success card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Product" asp-action="SaveAttribute" method="post">
+            <input type="hidden" asp-for="ProductID" />
+            <input type="hidden" asp-for="AttributeID" />
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Tên thuộc tính:</label>
+                <div class="col-sm-10">
+                    <input type="text" asp-for="AttributeName" class="form-control" placeholder="Nhập tên thuộc tính" autofocus />
+                    @Html.ValidationMessageFor(m => m.AttributeName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Giá trị:</label>
+                <div class="col-sm-10">
+                    <input type="text" asp-for="AttributeValue" class="form-control" placeholder="Nhập giá trị của thuộc tính" />
+                    @Html.ValidationMessageFor(m => m.AttributeValue, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Thứ tự hiển thị:</label>
+                <div class="col-sm-4">
+                    <input type="number" asp-for="DisplayOrder" class="form-control" />
+                </div>
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Product/Edit/@Model.ProductID" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        </form>
+    </div>
+</div>
+
+

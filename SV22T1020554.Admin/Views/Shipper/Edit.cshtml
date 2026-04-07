@@ -1,0 +1,38 @@
+@model Shipper
+@{
+}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Shipper" asp-action="Save" method="post">
+            <input type="hidden" asp-for="ShipperID" />
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Tên người giao hàng:</label>
+                <input type="text" class="form-control" asp-for="ShipperName" autofocus placeholder="Nhập tên người giao hàng">
+                @Html.ValidationMessageFor(m => m.ShipperName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Điện thoại:</label>
+                <input type="tel" class="form-control" asp-for="Phone" placeholder="Nhập số điện thoại">
+            </div>
+
+            <div class="card-footer text-end mt-3 px-0 pb-0 bg-transparent border-0">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Shipper" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2 text-start"></div>
+        </form>
+    </div>
+</div>
+
+

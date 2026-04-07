@@ -1,0 +1,144 @@
+@model PagedResult<OrderViewInfo>
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int statusFilter = ViewBag.Status ?? 0;
+}
+
+<div class="container py-4">
+    <h2 class="section-title">
+        <i class="fas fa-clipboard-list me-2"></i>Đơn hàng của tôi
+    </h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-custom">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Status Filter Tabs -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a asp-controller="Order" asp-action="Index" asp-route-status="0"
+           class="btn @(statusFilter == 0 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            Tất cả
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="1"
+           class="btn @(statusFilter == 1 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-clock me-1"></i>Mới
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="2"
+           class="btn @(statusFilter == 2 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-check me-1"></i>Đã duyệt
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="3"
+           class="btn @(statusFilter == 3 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-truck me-1"></i>Đang giao
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="4"
+           class="btn @(statusFilter == 4 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-check-double me-1"></i>Hoàn tất
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="-1"
+           class="btn @(statusFilter == -1 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-ban me-1"></i>Đã hủy
+        </a>
+        <a asp-controller="Order" asp-action="Index" asp-route-status="-2"
+           class="btn @(statusFilter == -2 ? "btn-primary-custom" : "btn-outline-custom")" style="font-size: 0.85rem;">
+            <i class="fas fa-times-circle me-1"></i>Từ chối
+        </a>
+    </div>
+
+    @if (Model.DataItems.Count > 0)
+    {
+        @foreach (var order in Model.DataItems)
+        {
+            string badgeClass = order.Status switch
+            {
+                OrderStatusEnum.New => "badge-new",
+                OrderStatusEnum.Accepted => "badge-accepted",
+                OrderStatusEnum.Shipping => "badge-shipping",
+                OrderStatusEnum.Completed => "badge-completed",
+                OrderStatusEnum.Cancelled => "badge-cancelled",
+                OrderStatusEnum.Rejected => "badge-rejected",
+                _ => "badge-new"
+            };
+
+            string statusIcon = order.Status switch
+            {
+                OrderStatusEnum.New => "fas fa-clock",
+                OrderStatusEnum.Accepted => "fas fa-check",
+                OrderStatusEnum.Shipping => "fas fa-truck",
+                OrderStatusEnum.Completed => "fas fa-check-double",
+                OrderStatusEnum.Cancelled => "fas fa-ban",
+                OrderStatusEnum.Rejected => "fas fa-times-circle",
+                _ => "fas fa-clock"
+            };
+
+            <a asp-controller="Order" asp-action="Detail" asp-route-id="@order.OrderID" style="text-decoration: none; color: inherit;">
+                <div class="card-glass p-3 mb-3" style="cursor: pointer; transition: var(--transition);"
+                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)';"
+                     onmouseout="this.style.transform=''; this.style.boxShadow='var(--shadow)';">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <span class="fw-bold" style="color: var(--primary);">#@order.OrderID</span>
+                            <span class="ms-3 text-muted" style="font-size: 0.85rem;">
+                                <i class="fas fa-calendar me-1"></i>@order.OrderTime.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                        </div>
+                        <span class="badge-status @badgeClass">
+                            <i class="@statusIcon me-1"></i>@order.Status.GetDescription()
+                        </span>
+                    </div>
+                    <div class="mt-2 d-flex justify-content-between align-items-center flex-wrap gap-2" style="font-size: 0.85rem;">
+                        <div class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            @order.DeliveryAddress, @order.DeliveryProvince
+                        </div>
+                        <div class="fw-semibold" style="font-size: 0.9rem;">
+                            <i class="fas fa-chevron-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        }
+
+        <!-- Pagination -->
+        @if (Model.PageCount > 1)
+        {
+            <nav class="mt-4 d-flex justify-content-center">
+                <ul class="pagination pagination-custom">
+                    @foreach (var pageItem in Model.GetDisplayPages())
+                    {
+                        if (pageItem.Page == 0)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                        else
+                        {
+                            <li class="page-item @(pageItem.IsCurrent ? "active" : "")">
+                                <a class="page-link"
+                                   asp-controller="Order" asp-action="Index"
+                                   asp-route-page="@pageItem.Page"
+                                   asp-route-status="@statusFilter">
+                                    @pageItem.Page
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h5>Chưa có đơn hàng</h5>
+            <p>Hãy bắt đầu mua sắm để tạo đơn hàng đầu tiên</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary-custom">
+                <i class="fas fa-shopping-bag me-1"></i>Mua sắm ngay
+            </a>
+        </div>
+    }
+</div>

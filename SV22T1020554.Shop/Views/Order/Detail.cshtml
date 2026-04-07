@@ -1,0 +1,220 @@
+@model OrderViewInfo
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.OrderID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var details = ViewBag.OrderDetails as List<OrderDetailViewInfo> ?? new List<OrderDetailViewInfo>();
+    decimal totalAmount = details.Sum(d => d.TotalPrice);
+
+    string badgeClass = Model.Status switch
+    {
+        OrderStatusEnum.New => "badge-new",
+        OrderStatusEnum.Accepted => "badge-accepted",
+        OrderStatusEnum.Shipping => "badge-shipping",
+        OrderStatusEnum.Completed => "badge-completed",
+        OrderStatusEnum.Cancelled => "badge-cancelled",
+        OrderStatusEnum.Rejected => "badge-rejected",
+        _ => "badge-new"
+    };
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Order" asp-action="Index">Đơn hàng</a></li>
+            <li class="breadcrumb-item active">#@Model.OrderID</li>
+        </ol>
+    </nav>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-custom">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Order Info -->
+            <div class="card-glass p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">Đơn hàng #@Model.OrderID</h4>
+                    <span class="badge-status @badgeClass" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                        @Model.Status.GetDescription()
+                    </span>
+                </div>
+                <div class="row g-3" style="font-size: 0.9rem;">
+                    <div class="col-md-6">
+                        <div class="text-muted mb-1">Ngày đặt hàng</div>
+                        <div class="fw-semibold"><i class="fas fa-calendar me-1 text-primary"></i>@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-muted mb-1">Địa chỉ giao hàng</div>
+                        <div class="fw-semibold"><i class="fas fa-map-marker-alt me-1 text-danger"></i>@Model.DeliveryAddress, @Model.DeliveryProvince</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card-glass p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-box me-2 text-primary"></i>Sản phẩm</h5>
+                @foreach (var item in details)
+                {
+                    <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+                        @if (!string.IsNullOrEmpty(item.Photo))
+                        {
+                            <img src="@item.Photo" alt="@item.ProductName"
+                                 style="width: 55px; height: 55px; object-fit: cover; border-radius: 8px;" />
+                        }
+                        else
+                        {
+                            <div style="width: 55px; height: 55px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="color: #cbd5e1;"></i>
+                            </div>
+                        }
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">@item.ProductName</div>
+                            <div style="font-size: 0.8rem; color: var(--gray);">
+                                @item.Quantity @item.Unit x @item.SalePrice.ToString("N0") ₫
+                            </div>
+                        </div>
+                        <div class="fw-bold" style="color: var(--primary); white-space: nowrap;">
+                            @item.TotalPrice.ToString("N0") ₫
+                        </div>
+                    </div>
+                }
+                <div class="d-flex justify-content-between align-items-center pt-3">
+                    <span class="fw-bold" style="font-size: 1.1rem;">Tổng cộng:</span>
+                    <span class="fw-bold" style="font-size: 1.3rem; color: var(--primary);">@totalAmount.ToString("N0") ₫</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Timeline -->
+        <div class="col-lg-4">
+            <div class="card-glass p-4" style="position: sticky; top: 80px;">
+                <h5 class="fw-bold mb-3"><i class="fas fa-history me-2 text-primary"></i>Trạng thái đơn hàng</h5>
+
+                <div class="order-timeline">
+                    @{
+                        bool isNewActive = (int)Model.Status >= 1;
+                        bool isNewCurrent = Model.Status == OrderStatusEnum.New;
+                        bool isAcceptedActive = (int)Model.Status >= 2;
+                        bool isAcceptedCurrent = Model.Status == OrderStatusEnum.Accepted;
+                        bool isShippingActive = (int)Model.Status >= 3;
+                        bool isShippingCurrent = Model.Status == OrderStatusEnum.Shipping;
+                        bool isCompletedActive = (int)Model.Status >= 4;
+                        bool isCompletedCurrent = Model.Status == OrderStatusEnum.Completed;
+                        bool isCancelled = Model.Status == OrderStatusEnum.Cancelled;
+                        bool isRejected = Model.Status == OrderStatusEnum.Rejected;
+                    }
+
+                    <!-- New -->
+                    <div class="timeline-item @(isNewActive ? "active" : "") @(isNewCurrent ? "current" : "")">
+                        <div class="timeline-dot">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Đặt hàng / Thanh toán thành công</h6>
+                            <small>@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                    </div>
+
+                    @if (isRejected)
+                    {
+                        <div class="timeline-item current">
+                            <div class="timeline-dot" style="background: linear-gradient(135deg, var(--danger), #dc2626); color: #fff;">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="text-danger">Đơn hàng bị từ chối</h6>
+                                @if (Model.FinishedTime.HasValue)
+                                {
+                                    <small>@Model.FinishedTime.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else if (isCancelled)
+                    {
+                        <div class="timeline-item current">
+                            <div class="timeline-dot" style="background: linear-gradient(135deg, var(--danger), #dc2626); color: #fff;">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="text-danger">Đơn hàng đã bị hủy</h6>
+                                @if (Model.FinishedTime.HasValue)
+                                {
+                                    <small>@Model.FinishedTime.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Accepted -->
+                        <div class="timeline-item @(isAcceptedActive ? "active" : "") @(isAcceptedCurrent ? "current" : "")">
+                            <div class="timeline-dot">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Đã được duyệt</h6>
+                                @if (Model.AcceptTime.HasValue)
+                                {
+                                    <small>@Model.AcceptTime.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Đang chờ xử lý</small>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Shipping -->
+                        <div class="timeline-item @(isShippingActive ? "active" : "") @(isShippingCurrent ? "current" : "")">
+                            <div class="timeline-dot">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Đang vận chuyển</h6>
+                                @if (Model.ShippedTime.HasValue)
+                                {
+                                    <small>@Model.ShippedTime.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Chưa xử lý</small>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Completed -->
+                        <div class="timeline-item @(isCompletedActive ? "active" : "") @(isCompletedCurrent ? "current" : "")">
+                            <div class="timeline-dot">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Hoàn tất</h6>
+                                @if (Model.FinishedTime.HasValue)
+                                {
+                                    <small>@Model.FinishedTime.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Chưa hoàn tất</small>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-3">
+                    <a asp-controller="Order" asp-action="Index" class="btn btn-outline-custom w-100">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+@model Employee
+@{
+    ViewBag.Title = "Xóa nhân viên";
+}
+
+<div class="card card-danger card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Xóa nhân viên</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Employee" asp-action="Delete" method="post">
+            <input type="hidden" asp-for="EmployeeID" />
+
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Họ và tên:</label>
+                        <p class="form-control-static">@Model.FullName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Ngày sinh:</label>
+                        <p class="form-control-static">@(Model.BirthDate?.ToString("dd/MM/yyyy"))</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Điện thoại:</label>
+                        <p class="form-control-static">@Model.Phone</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Email:</label>
+                        <p class="form-control-static">@Model.Email</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary" style="font-weight:bold">Địa chỉ:</label>
+                        <p class="form-control-static">@Model.Address</p>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <label class="form-label text-primary" style="font-weight:bold">Ảnh đại diện:</label>
+                    <div class="p-1 border rounded bg-light">
+                        <img src="~/images/employees/@(string.IsNullOrEmpty(Model.Photo) ? "nophoto.png" : Model.Photo)"
+                             class="img-fluid rounded"
+                             style="max-height: 250px" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-danger text-start mb-3">
+                        @TempData["Message"]
+                    </div>
+                }
+                
+                <p class="text-warning text-start mb-3"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa nhân viên này không?</p>
+                
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                </button>
+                <a href="~/Employee" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

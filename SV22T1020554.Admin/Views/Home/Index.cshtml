@@ -1,0 +1,260 @@
+@{
+    ViewBag.Title = "";
+    var stats = ViewBag.Statistics as SV22T1020554.BusinessLayers.DashboardStatistics;
+    var monthlyRevenue = ViewBag.MonthlyRevenue as List<SV22T1020554.DataLayers.Interfaces.MonthlyRevenue>;
+    var pendingOrders = ViewBag.PendingOrders as List<SV22T1020554.Models.Sales.OrderViewInfo>;
+    var topProducts = ViewBag.TopProducts as List<SV22T1020554.BusinessLayers.TopProduct>;
+}
+
+<style>
+    .custom-small-box {
+        position: relative;
+        display: block;
+        padding: 18px 20px;
+        border-radius: 4px;
+        color: #fff;
+        height: 100%;
+        overflow: hidden;
+    }
+    .custom-small-box .title {
+        font-size: 0.9rem;
+        font-weight: 400;
+        margin-bottom: 4px;
+        display: block;
+        opacity: 0.9;
+    }
+    .custom-small-box .value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        display: block;
+    }
+    .custom-small-box .icon {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        font-size: 3rem;
+        opacity: 0.2;
+        transition: transform 0.3s;
+    }
+    .custom-small-box:hover .icon {
+        transform: translateY(-50%) scale(1.1);
+    }
+    .bg-blue-custom { background-color: #007bff; }
+    .bg-green-custom { background-color: #1a8754; }
+    .bg-yellow-custom { background-color: #ffc107; color: #000; }
+    .bg-red-custom { background-color: #dc3545; }
+</style>
+
+<div class="pt-3">
+    <!-- 4 Small Boxes -->
+    <div class="row g-3">
+        <div class="col-lg-3 col-6">
+            <div class="custom-small-box bg-blue-custom shadow-sm">
+                <span class="title">Doanh thu hôm nay <strong>(@stats?.PendingOrders)</strong></span>
+                <span class="value">@String.Format("{0:N0}", stats?.TodayRevenue ?? 0) đ</span>
+                <div class="icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="custom-small-box bg-green-custom shadow-sm">
+                <span class="title">Đơn hàng</span>
+                <span class="value">@stats?.TotalOrders</span>
+                <div class="icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="custom-small-box bg-yellow-custom shadow-sm">
+                <span class="title">Khách hàng</span>
+                <span class="value">@stats?.TotalCustomers</span>
+                <div class="icon">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="custom-small-box bg-red-custom shadow-sm">
+                <span class="title">Sản phẩm</span>
+                <span class="value">@stats?.TotalProducts</span>
+                <div class="icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart & Top Products -->
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h3 class="card-title text-muted mb-0" style="font-size: 0.95rem;">
+                        <i class="bi bi-bar-chart-line me-2"></i> Doanh thu theo tháng
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px;">
+                        <canvas id="revenue-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h3 class="card-title text-muted mb-0" style="font-size: 0.95rem;">
+                        <i class="bi bi-star me-2"></i> Top sản phẩm bán chạy
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (topProducts != null && topProducts.Any())
+                        {
+                            @foreach (var product in topProducts)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-3">
+                                    <span class="text-secondary" style="font-size: 0.85rem;">@product.ProductName</span>
+                                    <span class="badge bg-success rounded-1">@product.TotalSold</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-3">
+                                <span class="text-secondary" style="font-size: 0.85rem;">Chưa có dữ liệu</span>
+                                <span class="badge bg-secondary rounded-1">0</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Orders -->
+    <div class="row mt-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h3 class="card-title text-muted mb-0" style="font-size: 0.95rem;">
+                        <i class="bi bi-clock-history me-2"></i> Đơn hàng cần xử lý
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-secondary">
+                            <thead class="table-light border-top-0">
+                                <tr class="text-dark" style="font-size: 0.85rem; font-weight: 700;">
+                                    <th class="ps-3 py-3 fw-bold">Mã đơn</th>
+                                    <th class="py-3 fw-bold">Khách hàng</th>
+                                    <th class="py-3 fw-bold">Ngày</th>
+                                    <th class="text-end py-3 fw-bold">Tổng tiền</th>
+                                    <th class="ps-3 py-3 fw-bold">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (pendingOrders != null && pendingOrders.Any())
+                                {
+                                    @foreach (var order in pendingOrders)
+                                    {
+                                        <tr style="font-size: 0.85rem;">
+                                            <td class="ps-3 py-3"><a href="@Url.Action("Detail", "Order", new { id = order.OrderID })" class="text-decoration-none">#@order.OrderID</a></td>
+                                            <td>@order.CustomerName</td>
+                                            <td>@order.OrderTime.ToString("dd/MM/yyyy")</td>
+                                            <td class="text-end">@String.Format("{0:N0}", order.TotalValue) đ</td>
+                                            <td class="ps-3">
+                                                @{
+                                                    var statusClass = order.Status == SV22T1020554.Models.Sales.OrderStatusEnum.New ? "bg-danger" : "bg-warning";
+                                                    var statusText = order.Status == SV22T1020554.Models.Sales.OrderStatusEnum.New ? "Đang chờ duyệt" : "Chờ giao hàng";
+                                                }
+                                                <span class="badge @statusClass text-dark px-2 py-1 rounded-1 fw-normal">@statusText</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-secondary">Không có đơn hàng cần xử lý</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const monthlyRevenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                monthlyRevenue?.Select(m => m.MonthName).ToList() ?? new List<string>()
+            ));
+            const revenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                monthlyRevenue?.Select(m => m.Revenue / 1000000).ToList() ?? new List<decimal>()
+            ));
+
+            const maxRevenue = Math.max(...revenueData, 1);
+            const ctx = document.getElementById('revenue-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyRevenueData,
+                    datasets: [{
+                        label: 'Doanh thu (triệu đồng)',
+                        data: revenueData,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 2,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                boxWidth: 15,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: Math.ceil(maxRevenue * 1.2),
+                            ticks: {
+                                stepSize: Math.ceil(maxRevenue / 5),
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

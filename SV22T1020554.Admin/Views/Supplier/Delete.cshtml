@@ -1,0 +1,66 @@
+@model Supplier
+@{
+    ViewBag.Title = "Xóa nhà cung cấp";
+}
+
+<div class="card card-danger card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Xóa nhà cung cấp</h3>
+    </div>
+
+    <div class="card-body mt-2">
+        <form asp-controller="Supplier" asp-action="Delete" method="post">
+            <input type="hidden" asp-for="SupplierID" />
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Tên nhà cung cấp:</label>
+                <p class="form-control-static">@Model.SupplierName</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Tên giao dịch:</label>
+                <p class="form-control-static">@Model.ContactName</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Điện thoại:</label>
+                <p class="form-control-static">@Model.Phone</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Email:</label>
+                <p class="form-control-static">@Model.Email</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Địa chỉ:</label>
+                <p class="form-control-static">@Model.Address</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-primary" style="font-weight:bold">Tỉnh / Thành:</label>
+                <p class="form-control-static">@Model.Province</p>
+            </div>
+
+            <div class="card-footer bg-white border-top mt-3 text-end px-0 pb-0 shadow-none border-0">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-danger text-start mb-3">
+                        @TempData["Message"]
+                    </div>
+                }
+                
+                <p class="text-warning text-start mb-3"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa nhà cung cấp này không?</p>
+                
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                </button>
+                <a href="~/Supplier" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

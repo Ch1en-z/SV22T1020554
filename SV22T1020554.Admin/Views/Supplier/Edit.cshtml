@@ -1,0 +1,69 @@
+@model Supplier
+@{
+}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Supplier" asp-action="Save" method="post">
+            <input type="hidden" asp-for="SupplierID" />
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Tên nhà cung cấp:</label>
+                <input type="text" class="form-control" asp-for="SupplierName" autofocus placeholder="Nhập tên nhà cung cấp">
+                @Html.ValidationMessageFor(m => m.SupplierName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Tên giao dịch:</label>
+                <input type="text" class="form-control" asp-for="ContactName" placeholder="Nhập tên giao dịch">
+                @Html.ValidationMessageFor(m => m.ContactName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Điện thoại:</label>
+                    <input type="tel" class="form-control" asp-for="Phone" placeholder="Nhập số điện thoại">
+                </div>
+
+                <div class="col-md-6 form-group mb-3">
+                    <label class="form-label" style="font-weight:bold">Email:</label>
+                    <input type="email" class="form-control" asp-for="Email" placeholder="Nhập email">
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Địa chỉ:</label>
+                <textarea class="form-control" rows="3" asp-for="Address" placeholder="Nhập địa chỉ"></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:bold">Tỉnh / Thành:</label>
+                <select class="form-select" asp-for="Province">
+                    <option value="">-- Chọn tỉnh / thành --</option>
+                    @foreach (var p in ViewBag.Provinces as List<Province>)
+                    {
+                        <option value="@p.ProvinceName">@p.ProvinceName</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.Province, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="card-footer text-end mt-3 px-0 pb-0 bg-transparent border-0">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Supplier" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2 text-start"></div>
+        </form>
+    </div>
+</div>
+
+

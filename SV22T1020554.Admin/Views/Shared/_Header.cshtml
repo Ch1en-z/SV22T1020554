@@ -1,0 +1,45 @@
+@using SV22T1020554.Admin
+@{
+    var userData = User.GetUserData();
+    var employeeName = userData?.DisplayName ?? "Admin";
+    var employeeEmail = userData?.Email ?? "";
+    
+    // Đang tạm thời cho phép xem Dashboard cho đến khi Permissions được định nghĩa
+    bool HasPerm(string p) => true; 
+}
+<nav class="app-header navbar navbar-expand bg-white">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                    <i class="bi bi-list"></i>
+                </a>
+            </li>
+            @if (HasPerm("DashboardView"))
+            {
+                <li class="nav-item d-none d-md-block"><a href="~/" class="nav-link">Trang chủ</a></li>
+            }
+        </ul>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown user-menu">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <img src="~/lib/adminlte/assets/img/avatar2.png" class="user-image rounded-circle shadow" alt="User Image" onerror="this.src='@Url.Content("~/images/products/nophoto.png")'" />
+                    <span class="d-none d-md-inline">@employeeName</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                    <li class="user-header text-bg-primary">
+                        <img src="~/lib/adminlte/assets/img/avatar2.png" class="rounded-circle shadow" alt="User Image" onerror="this.src='@Url.Content("~/images/products/nophoto.png")'" />
+                        <p>
+                            @employeeName
+                            <small>@employeeEmail</small>
+                        </p>
+                    </li>
+                    <li class="user-footer">
+                        <a href="~/Account/ChangePassword" class="btn btn-default btn-flat">Đổi mật khẩu</a>
+                        <a href="~/Account/Logout" class="btn btn-default btn-flat float-end">Thoát</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

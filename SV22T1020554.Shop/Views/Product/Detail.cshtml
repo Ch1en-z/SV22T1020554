@@ -1,0 +1,115 @@
+@model Product
+@{
+    ViewData["Title"] = Model.ProductName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var photos = ViewBag.Photos as List<ProductPhoto> ?? new List<ProductPhoto>();
+    var attributes = ViewBag.Attributes as List<ProductAttribute> ?? new List<ProductAttribute>();
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+            <li class="breadcrumb-item active">@Model.ProductName</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="product-detail-image mb-3 text-center border p-2" style="border-radius: 12px; overflow: hidden;">
+                @if (!string.IsNullOrEmpty(Model.Photo))
+                {
+                    <img src="@Model.Photo" alt="@Model.ProductName" id="mainImage" style="max-width: 100%; height: auto; object-fit: contain; max-height: 400px;" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center" style="height: 400px; background: #f8fafc;">
+                        <i class="fas fa-image" style="font-size: 5rem; color: #cbd5e1;"></i>
+                    </div>
+                }
+            </div>
+
+            @if (photos.Count > 0 || !string.IsNullOrEmpty(Model.Photo))
+            {
+                <div class="product-gallery d-flex gap-2 overflow-auto pb-2">
+                    @if (!string.IsNullOrEmpty(Model.Photo))
+                    {
+                        <div class="gallery-thumb active border p-1" style="width: 80px; cursor: pointer;" onclick="changeImage('@Model.Photo', this)">
+                            <img src="@Model.Photo" alt="Main" class="img-fluid" />
+                        </div>
+                    }
+                    @foreach (var photo in photos.Where(p => !p.IsHidden))
+                    {
+                        <div class="gallery-thumb border p-1" style="width: 80px; cursor: pointer;" onclick="changeImage('@photo.Photo', this)">
+                            <img src="@photo.Photo" alt="@photo.Description" class="img-fluid" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-7">
+            <div class="product-detail-info">
+                <h1 class="product-title fw-bold">@Model.ProductName</h1>
+                <div class="product-price-detail fs-3 text-primary fw-bold mb-3">
+                    @Model.Price.ToString("N0") ₫
+                    <span class="ms-2 text-muted fw-normal" style="font-size: 0.9rem;">/ @Model.Unit</span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ProductDescription))
+                {
+                    <div class="mb-4 text-secondary" style="line-height: 1.7;">
+                        @Html.Raw(Model.ProductDescription)
+                    </div>
+                }
+
+                <div class="mb-4 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-lg flex-grow-1" onclick="openAddToCartModal(@Model.ProductID, 'cart')">
+                        <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg flex-grow-1" onclick="openAddToCartModal(@Model.ProductID, 'buy')">
+                        <i class="fas fa-bolt me-2"></i>Mua ngay
+                    </button>
+                </div>
+
+                <div class="d-flex gap-4 border-top pt-3 mt-2" style="font-size: 0.85rem; color: #6c757d;">
+                    <div><i class="fas fa-truck me-1 text-primary"></i>Giao hàng toàn quốc</div>
+                    <div><i class="fas fa-shield-alt me-1 text-success"></i>Bảo đảm chất lượng</div>
+                    <div><i class="fas fa-undo me-1 text-warning"></i>Đổi trả 7 ngày</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (attributes.Count > 0)
+    {
+        <div class="mt-5">
+            <div class="card p-4 shadow-sm">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="fas fa-list-alt me-2 text-primary"></i>Thông số kỹ thuật</h5>
+                <table class="table table-striped mb-0">
+                    <tbody>
+                        @foreach (var attr in attributes.OrderBy(a => a.DisplayOrder))
+                        {
+                            <tr>
+                                <th style="width: 30%">@attr.AttributeName</th>
+                                <td>@attr.AttributeValue</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Xử lý đổi ảnh gallery
+        function changeImage(src, element) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active', 'border-primary'));
+            element.classList.add('active', 'border-primary');
+        }
+    </script>
+}

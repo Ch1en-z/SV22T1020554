@@ -1,0 +1,65 @@
+@model ProductPhoto
+@{
+}
+
+<div class="card card-info card-outline">
+    <div class="card-header">
+        <h3 class="card-title">@ViewBag.Title</h3>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Product" asp-action="SavePhoto" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ProductID" />
+            <input type="hidden" asp-for="PhotoID" />
+            <input type="hidden" asp-for="Photo" />
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Chọn ảnh:</label>
+                <div class="col-sm-10">
+                    <input type="file" name="uploadPhoto" class="form-control mb-2" accept="image/*"
+                           onchange="document.getElementById('imgPreview').src = window.URL.createObjectURL(this.files[0])" />
+                    <img id="imgPreview"
+                         src="~/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "noproduct.png" : Model.Photo)"
+                         class="img-fluid rounded border"
+                         style="max-height: 250px" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Mô tả:</label>
+                <div class="col-sm-10">
+                    <input type="text" asp-for="Description" class="form-control" placeholder="Nhập mô tả ảnh" autofocus />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Thứ tự hiển thị:</label>
+                <div class="col-sm-4">
+                    <input type="number" asp-for="DisplayOrder" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Trạng thái:</label>
+                <div class="col-sm-10">
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" asp-for="IsHidden" id="IsHidden">
+                        <label class="form-check-label" for="IsHidden">Ẩn ảnh này (không hiển thị cho khách hàng)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu dữ liệu
+                </button>
+                <a href="~/Product/Edit/@Model.ProductID" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div>
+        </form>
+    </div>
+</div>
+
+
