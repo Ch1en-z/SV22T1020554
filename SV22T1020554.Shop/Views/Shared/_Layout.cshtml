@@ -290,8 +290,12 @@
                             $('body').append(form);
                             form.submit();
                         } else {
+                            // Tự động sửa lỗi hiển thị tiếng Việt nếu Server trả về chuỗi bị lỗi
+                            var msg = response.message || "";
+                            msg = msg.replace("Đ? thêm vào gi? hàng!", "Đã thêm vào giỏ hàng!");
+                            
                             // Toast thành công
-                            $('#cartToastMsg').text(response.message);
+                            $('#cartToastMsg').text(msg);
                             var toast = new bootstrap.Toast(document.getElementById('cartToast'));
                             toast.show();
                         }
