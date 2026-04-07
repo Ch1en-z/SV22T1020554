@@ -254,7 +254,11 @@ namespace SV22T1020554.Admin.Controllers
                 return View(data);
             }
 
-            await HRDataService.ChangePasswordAsync(id, newPassword);
+            bool result = await HRDataService.ChangePasswordAsync(id, newPassword);
+            if (result)
+            {
+                TempData["SuccessMessage"] = "Thay đổi mật khẩu cho nhân viên thành công!";
+            }
             return RedirectToAction("Index");
         }
     }

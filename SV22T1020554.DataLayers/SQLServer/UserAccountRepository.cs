@@ -75,25 +75,23 @@ namespace SV22T1020554.DataLayers.SQLServer
 
         public async Task<bool> ChangePassword(string userName, string password)
         {
-            bool result = false;
             string hashedPassword = HashPassword(password);
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = @"UPDATE Customers
-                            SET Password = @Password
-                            WHERE Email = @UserName";
+                // Cập nhật cho cả Nhân viên và Khách hàng dựa trên UserName (thường là Email)
+                var sql = @"UPDATE Employees SET Password = @Password WHERE Email = @UserName;
+                            UPDATE Customers SET Password = @Password WHERE Email = @UserName;";
                 
                 var parameters = new
                 {
-                    UserName = userName,
+                    UserName = userName ?? "",
                     Password = hashedPassword
                 };
 
-                result = (await connection.ExecuteAsync(sql, parameters)) > 0;
+                int rowsAffected = await connection.ExecuteAsync(sql, parameters);
+                return rowsAffected > 0;
             }
-
-            return result;
         }
 
         /// <summary>

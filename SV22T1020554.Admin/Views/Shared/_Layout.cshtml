@@ -86,6 +86,35 @@
                     openModal(e, this);
                 }
             });
+
+            // Hiển thị thông báo từ TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                setTimeout(function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: '@Html.Raw(TempData["SuccessMessage"])',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Đóng lại'
+                    });
+                }, 500);
+                </text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>
+                setTimeout(function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi rồi!',
+                        text: '@Html.Raw(TempData["ErrorMessage"])',
+                        showConfirmButton: true
+                    });
+                }, 500);
+                </text>
+            }
         });
     </script>
 </body>

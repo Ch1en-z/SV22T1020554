@@ -85,11 +85,52 @@ namespace SV22T1020554.Admin.Controllers
     /// <param name="oldPassword">Mật khẩu cũ</param>
     /// <param name="newPassword">Mật khẩu mới</param>
     /// <return></return>
-    [HttpPost]
+        [HttpPost]
         [Route("ChangePassword")]
-        public IActionResult ChangePassword(string oldPassword, string newPassword)
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword, string confirmPassword)
         {
-            return View();
+            if (string.IsNullOrWhiteSpace(oldPassword) || string.IsNullOrWhiteSpace(newPassword))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ mật khẩu cũ và mới");
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không khớp");
+                return View();
+            }
+
+            // Lấy thông tin User hiện tại từ Principal
+            var userData = User.GetUserData();
+            if (userData == null || string.IsNullOrWhiteSpace(userData.Email))
+            {
+                ModelState.AddModelError("", "Không tìm thấy thông tin định danh của người dùng.");
+                return View();
+            }
+
+            string username = userData.Email;
+
+            // Kiểm tra mật khẩu cũ để xác thực
+            var account = await UserAccountService.AuthorizeAsync(username, oldPassword);
+            if (account == null)
+            {
+                ModelState.AddModelError("oldPassword", "Mật khẩu cũ không chính xác");
+                return View();
+            }
+            
+            // Đổi mật khẩu
+            bool result = await UserAccountService.ChangePasswordAsync(username, newPassword);
+            if (result)
+            {
+                TempData["SuccessMessage"] = "Thay đổi mật khẩu tài khoản của bạn thành công!";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Đã có lỗi xảy ra, vui lòng thử lại sau.");
+                return View();
+            }
         }
 
         /// <summary>

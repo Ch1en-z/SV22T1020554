@@ -67,6 +67,15 @@
             </div>
 
             <div class="card-footer text-end mt-3">
+                @if (Model.EmployeeID > 0)
+                {
+                    <a href="~/Employee/ChangePassword/@Model.EmployeeID" class="btn btn-warning float-start me-1">
+                        <i class="bi bi-key me-1"></i> Đổi mật khẩu
+                    </a>
+                    <a href="~/Employee/ChangeRole/@Model.EmployeeID" class="btn btn-info float-start me-1">
+                        <i class="bi bi-shield-check me-1"></i> Phân quyền
+                    </a>
+                }
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save me-1"></i> Lưu dữ liệu
                 </button>
